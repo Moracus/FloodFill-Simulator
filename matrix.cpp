@@ -11,14 +11,20 @@ const int SCREEN_HEIGHT = 480;
 
 const int CELL_SIZE = 25;
 
-vector<vector<int>> matrix = {{1, 1, 1, 1, 1, 1, 1, 1},
-                              {1, 1, 1, 1, 1, 1, 0, 0},
-                              {1, 0, 0, 1, 1, 0, 1, 1},
-                              {1, 2, 2, 2, 2, 0, 1, 0},
-                              {1, 1, 1, 2, 2, 0, 1, 0},
-                              {1, 1, 1, 2, 2, 2, 2, 0},
-                              {1, 1, 1, 1, 1, 2, 1, 1},
-                              {1, 1, 1, 1, 1, 2, 2, 1}};
+vector<vector<int>> matrix = {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+    {1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
+    {1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+    {1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
 void dfs(int row, int col, vector<vector<int>> &image, vector<vector<int>> &ans, int newColor, int iniColor, int n, int m, int delrow[], int delcol[],
          queue<vector<vector<int>>> &q)
@@ -73,7 +79,7 @@ bool init(SDL_Window *&window, SDL_Renderer *&renderer)
         return false;
     }
 
-    window = SDL_CreateWindow("Matrix Drawing Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Flood fill simulation", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
         printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -164,7 +170,7 @@ Uint32 visualizer(Uint32 interval, void *params)
 
     if (!q.empty())
     {
-        drawMatrix(renderer, q.front());
+        // drawMatrix(renderer, q.front());
         q.pop();
     }
 
@@ -177,7 +183,7 @@ int main(int argc, char *args[])
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     q.push(matrix);
-    vector<vector<int>> ans = floodFill(matrix, 3, 3, 3, q);
+    vector<vector<int>> ans = floodFill(matrix, 0, 1, 3, q);
     TimerCallbackParams timerParams = {renderer, q}; // Create params for timer callback
     if (!init(window, renderer))
     {
@@ -187,7 +193,7 @@ int main(int argc, char *args[])
 
     bool quit = false;
     SDL_Event e;
-    SDL_TimerID timerId = SDL_AddTimer(1000, visualizer, &timerParams); // Pass pointer to params
+    SDL_TimerID timerId = SDL_AddTimer(200, visualizer, &timerParams); // Pass pointer to params
     while (!quit)
     {
         while (SDL_PollEvent(&e) != 0)
@@ -198,9 +204,11 @@ int main(int argc, char *args[])
             }
         }
 
-        drawMatrix(renderer, q.front());
+        if (!q.empty())
+            drawMatrix(renderer, q.front());
         if (q.empty())
         {
+            drawMatrix(renderer, ans);
             SDL_RemoveTimer(timerId);
         }
 
