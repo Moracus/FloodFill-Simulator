@@ -33,15 +33,7 @@ void dfs(int row, int col, vector<vector<int>> &image, vector<vector<int>> &ans,
     // Marking it as the newColor
     ans[row][col] = newColor;
     q.push(ans);
-    // cout << "state new" << endl;
-    // for (int i = 0; i < ans.size(); i++)
-    // {
-    //     for (int j = 0; j < ans[0].size(); j++)
-    //     {
-    //         std::cout << ans[i][j] << " ";
-    //     }
-    //     std::cout << endl;
-    // }
+
     for (int i = 0; i < 4; i++)
     {
         int nrow = row + delrow[i];
@@ -105,8 +97,6 @@ void close(SDL_Window *window, SDL_Renderer *renderer)
 
 void drawBox(SDL_Renderer *renderer)
 {
-    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
-    // SDL_RenderClear(renderer);
     SDL_Rect box = {SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, SCREEN_WIDTH * 2 / 3, SCREEN_HEIGHT * 2 / 3};
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
 
@@ -115,10 +105,9 @@ void drawBox(SDL_Renderer *renderer)
 
 void drawMatrix(SDL_Renderer *renderer, vector<vector<int>> &matrix)
 {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     drawBox(renderer);
-    // cout << "inside draw matrix" << endl;
 
     for (int i = 0; i < matrix.size(); ++i)
     {
@@ -149,7 +138,6 @@ void drawMatrix(SDL_Renderer *renderer, vector<vector<int>> &matrix)
             }
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderDrawRect(renderer, &rect);
-            // rect = {(SCREEN_WIDTH / 6 + (j * CELL_SIZE)), (SCREEN_HEIGHT / 6 + (i * CELL_SIZE)), CELL_SIZE - 2, CELL_SIZE - 2};
         }
     }
 
@@ -170,7 +158,7 @@ Uint32 visualizer(Uint32 interval, void *params)
 
     if (!q.empty())
     {
-        // drawMatrix(renderer, q.front());
+
         q.pop();
     }
 
@@ -184,7 +172,7 @@ int main(int argc, char *args[])
     SDL_Renderer *renderer = NULL;
     q.push(matrix);
     vector<vector<int>> ans = floodFill(matrix, 0, 1, 3, q);
-    TimerCallbackParams timerParams = {renderer, q}; // Create params for timer callback
+    TimerCallbackParams timerParams = {renderer, q};
     if (!init(window, renderer))
     {
         printf("Failed to initialize!\n");
