@@ -90,8 +90,10 @@ bool init(SDL_Window *&window, SDL_Renderer *&renderer)
 
 void close(SDL_Window *window, SDL_Renderer *renderer)
 {
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+
     SDL_Quit();
 }
 
@@ -141,7 +143,14 @@ void drawMatrix(SDL_Renderer *renderer, vector<vector<int>> &matrix)
         }
     }
 
-    SDL_RenderPresent(renderer);
+    try
+    {
+        SDL_RenderPresent(renderer);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 struct TimerCallbackParams
@@ -159,7 +168,14 @@ Uint32 visualizer(Uint32 interval, void *params)
     if (!q.empty())
     {
 
-        q.pop();
+        try
+        {
+            q.pop();
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
     }
 
     return interval;
@@ -181,7 +197,8 @@ int main(int argc, char *args[])
 
     bool quit = false;
     SDL_Event e;
-    SDL_TimerID timerId = SDL_AddTimer(200, visualizer, &timerParams); // Pass pointer to params
+    int timer = 0;
+    const int ticksUntilNextFrame = 200;
     while (!quit)
     {
         while (SDL_PollEvent(&e) != 0)
@@ -193,16 +210,18 @@ int main(int argc, char *args[])
         }
 
         if (!q.empty())
+        {
             drawMatrix(renderer, q.front());
-        if (q.empty())
+            timer++;
+            if (timer >= ticksUntilNextFrame)
+            {
+                q.pop();
+                timer = 0;
+            }
+        }
+        else
         {
             drawMatrix(renderer, ans);
-            SDL_RemoveTimer(timerId);
-        }
-
-        if (quit)
-        {
-            SDL_RemoveTimer(timerId); // Remove timer before exiting
         }
     }
 
