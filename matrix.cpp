@@ -26,6 +26,32 @@ vector<vector<int>> matrix = {
     {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
+void bfs(int sr, int sc, vector<vector<int>> &image, vector<vector<int>> &ans, int newColor, int iniColor, int delrow[], int delcol[], queue<pair<int, int>> &bfsQ, queue<vector<vector<int>>> &q)
+{
+
+    bfsQ.push({sr, sc});
+    int n = image.size();
+    int m = image[0].size();
+    while (!bfsQ.empty())
+    {
+        int row = bfsQ.front().first;
+        int col = bfsQ.front().second;
+        ans[row][col] = newColor;
+        q.push(ans);
+        bfsQ.pop();
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nrow = row + delrow[i];
+            int ncol = col + delcol[i];
+            if (nrow >= 0 && nrow < n && ncol >= 0 && ncol < m && image[nrow][ncol] == iniColor && ans[nrow][ncol] != newColor)
+            {
+                bfsQ.push({nrow, ncol});
+            }
+        }
+    }
+}
+
 void dfs(int row, int col, vector<vector<int>> &image, vector<vector<int>> &ans, int newColor, int iniColor, int n, int m, int delrow[], int delcol[],
          queue<vector<vector<int>>> &q)
 {
@@ -50,6 +76,7 @@ vector<vector<int>> floodFill(vector<vector<int>> &image, int sr, int sc, int ne
 {
     // Code here
     vector<vector<int>> ans = image;
+    queue<pair<int, int>> bfsQ;
     int n = image.size();
     int m = image[0].size();
     // Initial Color
@@ -59,7 +86,8 @@ vector<vector<int>> floodFill(vector<vector<int>> &image, int sr, int sc, int ne
     int delrow[] = {-1, 0, +1, 0};
     int delcol[] = {0, +1, 0, -1};
     // Calling dfs function
-    dfs(sr, sc, image, ans, newColor, iniColor, n, m, delrow, delcol, q);
+    // dfs(sr, sc, image, ans, newColor, iniColor, n, m, delrow, delcol, q);
+    bfs(sr, sc, image, ans, newColor, iniColor, delrow, delcol, bfsQ, q);
     return ans;
 }
 
@@ -198,7 +226,7 @@ int main(int argc, char *args[])
     bool quit = false;
     SDL_Event e;
     int timer = 0;
-    const int ticksUntilNextFrame = 200;
+    const int ticksUntilNextFrame = 100;
     while (!quit)
     {
         while (SDL_PollEvent(&e) != 0)
